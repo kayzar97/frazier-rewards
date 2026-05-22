@@ -18,7 +18,7 @@ type Prediction = {
   guess_amount: number;
 };
 
-const pastHunts = [{ hunt: "#251" }, { hunt: "#250" }, { hunt: "#249" }, { hunt: "#248" }];
+const pastHunts: { hunt: string }[] = [];
 
 export default function BonusHuntPage() {
   const { data: session } = useSession();
@@ -74,7 +74,7 @@ export default function BonusHuntPage() {
       : predictions;
 
   return (
-    <main className="min-h-screen bg-black px-6 py-24 text-white">
+<main className="min-h-screen bg-transparent px-6 py-24 text-white">
       <div className="mx-auto max-w-7xl">
         <h1 className="text-center text-7xl font-black tracking-[0.2em] text-white drop-shadow-[0_0_25px_rgba(255,0,0,0.7)]">
           BONUS HUNTS
@@ -86,27 +86,41 @@ export default function BonusHuntPage() {
             Past Bonus Hunts
           </div>
 
-          <div className="flex gap-4 overflow-x-auto pb-4">
-            {pastHunts.map((item) => (
-              <div
-                key={item.hunt}
-                className="min-w-[220px] rounded-3xl border border-red-500/30 bg-black/70 p-6 shadow-[0_0_25px_rgba(255,0,0,0.12)]"
-              >
-                <div className="flex flex-col items-center justify-center py-6 text-center">
-                  <div className="mb-4 text-5xl">🔒</div>
-                  <p className="text-2xl font-black text-white">
-                    HUNT {item.hunt}
-                  </p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.25em] text-zinc-500">
-                    Locked
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+{pastHunts.length === 0 ? (
+  <div className="rounded-3xl border border-red-500/20 bg-black/60 p-10 text-center">
+    <p className="text-2xl font-black uppercase text-white">
+      No Previous Hunts Yet
+    </p>
+
+    <p className="mt-3 text-zinc-500">
+      Completed bonus hunts will appear here.
+    </p>
+  </div>
+) : (
+  <div className="flex gap-4 overflow-x-auto pb-4">
+    {pastHunts.map((item) => (
+      <div
+        key={item.hunt}
+        className="min-w-[220px] rounded-3xl border border-red-500/30 bg-black/70 p-6 shadow-[0_0_25px_rgba(255,0,0,0.12)]"
+      >
+        <div className="flex flex-col items-center justify-center py-6 text-center">
+          <div className="mb-4 text-5xl">🔒</div>
+
+          <p className="text-2xl font-black text-white">
+            HUNT {item.hunt}
+          </p>
+
+          <p className="mt-2 text-xs uppercase tracking-[0.25em] text-zinc-500">
+            Locked
+          </p>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
         </section>
 
-        <section className="mt-6 grid overflow-hidden rounded-3xl border border-red-500/20 bg-zinc-950/80 shadow-[0_0_40px_rgba(255,0,0,0.2)] lg:grid-cols-2">
+<section className="mt-6 grid overflow-hidden rounded-3xl border border-red-500/20 bg-black/70 backdrop-blur-md shadow-[0_0_40px_rgba(255,0,0,0.2)] lg:grid-cols-2">
           <div className="border-b border-red-500/10 p-8 lg:border-b-0 lg:border-r">
             <div className="mb-10 flex items-center justify-between">
               <h2 className="text-2xl font-black uppercase">
@@ -230,7 +244,7 @@ export default function BonusHuntPage() {
           </div>
         </section>
 
-        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-zinc-950/80">
+        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-black/70 backdrop-blur-md">
           <div className="flex items-center gap-3 px-5 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
             <Trophy className="h-5 w-5 text-red-400" />
             Prediction Leaderboard
@@ -276,7 +290,7 @@ export default function BonusHuntPage() {
           )}
         </section>
 
-        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-zinc-950/80">
+        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-black/70 backdrop-blur-md">
           <div className="flex items-center gap-3 px-5 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
             <Coins className="h-5 w-5 text-red-400" />
             Slots in this hunt
