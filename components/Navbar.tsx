@@ -81,7 +81,7 @@ useEffect(() => {
       <div className="relative mx-auto flex h-20 max-w-7xl items-center px-0">
 <Link href="/" className="group relative z-10 flex cursor-pointer items-center">
           <img
-            src="/frazier-rewards-logo.png"
+src="/Frazier-rewards-logo.png"
             alt="Frazier Rewards"
             className="h-40 translate-y-[2px] object-contain transition duration-300 group-hover:scale-105 group-hover:drop-shadow-[0_0_18px_rgba(255,220,0,1)]"
           />
