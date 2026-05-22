@@ -1,0 +1,222 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { signIn, signOut, useSession } from "next-auth/react";
+
+export default function ProfilePage() {
+  const { data: session, status } = useSession();
+const [role, setRole] = useState("user");
+const [username, setUsername] = useState("");
+const [twitchUsername, setTwitchUsername] = useState("");
+const [twitchAvatar, setTwitchAvatar] = useState("");
+const [saved, setSaved] = useState(false);
+async function disconnectTwitch() {
+  const confirmed = confirm(
+    "Disconnect Twitch? The previous Twitch account will be kept in our records for giveaway security."
+  );
+
+  if (!confirmed) return;
+
+  const res = await fetch("/api/connect/twitch/disconnect", {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    alert("Failed to disconnect Twitch");
+    return;
+  }
+
+  setTwitchUsername("");
+  setTwitchAvatar("");
+}
+useEffect(() => {
+  if (!session?.user?.name) return;
+
+async function loadProfile() {
+  const res = await fetch("/api/profile");
+  const data = await res.json();
+  setRole(data?.profile?.role || "user");
+
+if (data?.profile?.spartans_username) {
+  setUsername(data.profile.spartans_username);
+  setSaved(localStorage.getItem("spartansUsernameSaved") === "true");
+}
+
+  
+  if (data?.profile?.twitch_username) {
+    setTwitchUsername(data.profile.twitch_username);
+  }
+
+  if (data?.profile?.twitch_image) {
+    setTwitchAvatar(data.profile.twitch_image);
+  }
+}
+
+  loadProfile();
+}, [session]);
+
+async function saveProfile() {
+  const res = await fetch("/api/profile", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      spartansUsername: username,
+    }),
+  });
+
+  const text = await res.text();
+
+  if (!res.ok) {
+    alert("API Error: " + text);
+    return;
+  }
+setSaved(true);
+localStorage.setItem("spartansUsernameSaved", "true");
+setSaved(true);
+}
+
+  if (status === "loading") return <p className="p-10 text-white">Loading...</p>;
+
+  if (!session?.user) {
+    return (
+      <main className="min-h-screen bg-zinc-950 p-10 text-white">
+<p>You need to login with Discord first.</p>
+      </main>
+    );
+  }
+  return (
+<main className="min-h-screen px-6 py-12 text-white">
+      <div className="mx-auto max-w-4xl">
+        <h1 className="mb-8 text-5xl font-black">Profile</h1>
+
+        {/* 🔴 USER CARD */}
+<div className="relative rounded-2xl border border-red-500/60 bg-black/100 p-8 shadow-[0_0_25px_rgba(239,68,68,0.35)]">
+  <h2 className="mb-6 text-2xl font-bold">Connected Accounts</h2>
+<div className="absolute right-8 top-8 inline-flex items-center rounded-full border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-xs font-bold text-yellow-300 shadow-[0_0_15px_rgba(255,215,0,0.35)]">
+  ROLE: {role.toUpperCase()}
+</div>
+
+  <div className="grid gap-4 md:grid-cols-2">
+    {/* Discord Card */}
+<div className="rounded-xl border border-blue-500 bg-zinc-800 p-5">
+      <div className="flex items-center gap-4">
+        <img
+          src={session.user.image || ""}
+          alt="Discord profile"
+          className="h-16 w-16 rounded-full border border-white/20"
+        />
+
+        <div>
+          <p className="text-xl font-bold">{session.user.name}</p>
+          <p className="text-sm text-zinc-400">Discord connected</p>
+        </div>
+      </div>
+
+      <span className="mt-5.5 inline-block rounded-md bg-emerald-500/20 px-3 py-1 text-sm font-bold text-emerald-300">
+        VERIFIED
+      </span>
+    </div>
+
+{/* Twitch Card */}
+<div className="rounded-xl border border-purple-500 bg-zinc-800 p-5">
+  <div className="flex items-center gap-4">
+{twitchAvatar ? (
+  <img
+    src={twitchAvatar}
+    alt="Twitch profile"
+    className="h-16 w-16 rounded-full border border-white/20"
+  />
+) : (
+  <div className="h-16 w-16 rounded-full border border-white/20" />
+)}
+
+    <div>
+      <p className="text-xl font-bold text-white">
+{twitchUsername
+  ? twitchUsername.charAt(0).toUpperCase() + twitchUsername.slice(1)
+  : "Twitch"}
+      </p>
+
+      <p className="text-sm text-zinc-400">
+        {twitchUsername ? "Twitch connected" : "Twitch not connected"}
+      </p>
+    </div>
+  </div>
+
+{twitchUsername ? (
+  <>
+    <span className="mt-4 inline-block rounded-md bg-emerald-500/20 px-3 py-1 text-sm font-bold text-emerald-300">
+      CONNECTED
+    </span>
+
+    <button
+      onClick={disconnectTwitch}
+      className="mt-3 ml-3 rounded-xl border border-red-500/50 bg-black/80 px-6 py-2 font-bold text-white transition hover:bg-red-500/20"
+    >
+      Disconnect
+    </button>
+  </>
+) : (
+  <button
+    onClick={() => (window.location.href = "/api/connect/twitch")}
+    className="mt-4 rounded-xl border border-purple-500/50 bg-black/80 px-6 py-3 font-bold text-white transition hover:bg-black/80"
+  >
+    Connect Twitch
+  </button>
+)}
+</div>
+</div>
+</div>
+
+        {/* 🔴 EDIT SECTION */}
+        <div className="mt-8 rounded-2xl border border-red-500/60 bg-black/100 p-8 shadow-[0_0_25px_rgba(239,68,68,0.25)]">
+          <label className="mb-3 block text-sm uppercase text-zinc-300">
+            Spartans Username
+          </label>
+
+          <input
+            value={username}
+onChange={(e) => {
+  setUsername(e.target.value);
+  setSaved(false);
+  localStorage.removeItem("spartansUsernameSaved");
+}}
+            placeholder="Enter your Spartans username"
+            className="w-full rounded-xl border border-red-500/60 bg-red-950 px-5 py-4 text-white outline-none focus:border-red-400"
+          />
+
+          <p className="mt-3 text-sm text-zinc-400">
+            Link your Spartans account to win prizes and participate in activities.
+          </p>
+
+<div className="mt-6 flex items-center gap-3">
+  <button
+    onClick={saveProfile}
+    className="cursor-pointer rounded-xl border border-red-400 px-8 py-3 font-bold text-white hover:bg-red-500/20"
+  >
+    Save
+  </button>
+
+  {saved && (
+    <span className="text-sm text-emerald-400">
+      Username saved.
+    </span>
+  )}
+</div>
+        </div>
+      <div className="mt-8 flex justify-end">
+  <button
+    onClick={() => signOut({ callbackUrl: "/", redirect: true })}
+className="cursor-pointer bg-black/90 backdrop-blur-md border border-red-500/50 rounded-xl px-8 py-3 font-bold text-white hover:bg-black/90 transition-all duration-200"
+  >
+    Logout
+  </button>
+</div>
+        {/* 🔴 LOGOUT */}
+      </div>
+
+    </main>
+  );
+}
