@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { Trophy, Target, Flame, Lock, Coins } from "lucide-react";
 
 type Hunt = {
   id: number;
@@ -17,18 +18,7 @@ type Prediction = {
   guess_amount: number;
 };
 
-const pastHunts = [
-  { hunt: "#251", start: "$5,000", winnings: "$3,507.47", avg: "75.20x", pl: "-$1,492.53" },
-  { hunt: "#250", start: "$4,000", winnings: "$4,845.96", avg: "234.50x", pl: "+$845.96" },
-  { hunt: "#249", start: "$5,000", winnings: "$3,982.42", avg: "195.76x", pl: "-$1,017.58" },
-  { hunt: "#248", start: "$6,000", winnings: "$12,407.98", avg: "466.19x", pl: "+$6,407.98" },
-];
-
-const slots = [
-  { name: "Merge Up 2", bet: "$0.75", multi: "138.24x", payout: "$103.68" },
-  { name: "Rainbow Bonanza 2000", bet: "$0.40", multi: "50.10x", payout: "$20.04" },
-  { name: "Tombstone Begins", bet: "$0.80", multi: "43.85x", payout: "$35.08" },
-];
+const pastHunts = [{ hunt: "#251" }, { hunt: "#250" }, { hunt: "#249" }, { hunt: "#248" }];
 
 export default function BonusHuntPage() {
   const { data: session } = useSession();
@@ -83,43 +73,44 @@ export default function BonusHuntPage() {
         )
       : predictions;
 
-  const topThree = sortedClosest.slice(0, 3);
-
   return (
-    <main className="min-h-screen px-6 py-24 text-white">
+    <main className="min-h-screen bg-black px-6 py-24 text-white">
       <div className="mx-auto max-w-7xl">
-        <h1 className="text-center text-6xl font-black tracking-widest text-blue-100 drop-shadow-[0_0_20px_rgba(96,165,250,0.65)]">
+        <h1 className="text-center text-7xl font-black tracking-[0.2em] text-white drop-shadow-[0_0_25px_rgba(255,0,0,0.7)]">
           BONUS HUNTS
         </h1>
 
         <section className="mt-12">
-          <p className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-300">
+          <div className="mb-5 flex items-center gap-3 text-lg font-black uppercase tracking-widest text-zinc-300">
+            <Target className="h-5 w-5 text-red-400" />
             Past Bonus Hunts
-          </p>
+          </div>
 
           <div className="flex gap-4 overflow-x-auto pb-4">
             {pastHunts.map((item) => (
               <div
                 key={item.hunt}
-                className="min-w-[180px] rounded-2xl border border-blue-300/30 bg-slate-950/70 p-4 shadow-[0_0_20px_rgba(59,130,246,0.15)]"
+                className="min-w-[220px] rounded-3xl border border-red-500/30 bg-black/70 p-6 shadow-[0_0_25px_rgba(255,0,0,0.12)]"
               >
-                <p className="font-bold">Hunt {item.hunt}</p>
-                <p className="text-sm text-slate-300">Start: {item.start}</p>
-                <p className="text-sm text-slate-300">Winnings: {item.winnings}</p>
-                <p className="text-sm text-slate-300">Avg X: {item.avg}</p>
-                <p className={`text-sm font-bold ${item.pl.startsWith("+") ? "text-emerald-400" : "text-red-400"}`}>
-                  P/L: {item.pl}
-                </p>
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <div className="mb-4 text-5xl">🔒</div>
+                  <p className="text-2xl font-black text-white">
+                    HUNT {item.hunt}
+                  </p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.25em] text-zinc-500">
+                    Locked
+                  </p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-6 grid overflow-hidden rounded-3xl border border-blue-300/20 bg-slate-950/80 shadow-[0_0_40px_rgba(37,99,235,0.25)] lg:grid-cols-2">
-          <div className="border-b border-blue-300/10 p-8 lg:border-b-0 lg:border-r">
+        <section className="mt-6 grid overflow-hidden rounded-3xl border border-red-500/20 bg-zinc-950/80 shadow-[0_0_40px_rgba(255,0,0,0.2)] lg:grid-cols-2">
+          <div className="border-b border-red-500/10 p-8 lg:border-b-0 lg:border-r">
             <div className="mb-10 flex items-center justify-between">
-              <h2 className="text-2xl font-black">
-                <span className="mr-2 text-emerald-400">●</span>
+              <h2 className="text-2xl font-black uppercase">
+                <span className="mr-2 text-red-500">●</span>
                 {hunt ? hunt.title : "No Hunt Live"}
               </h2>
 
@@ -128,65 +119,81 @@ export default function BonusHuntPage() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-6 text-center md:grid-cols-5">
-              <div>
-                <p className="text-xs uppercase text-slate-400">Start</p>
-                <p className="text-2xl font-black">$4,000</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-slate-400">Bonuses</p>
-                <p className="text-2xl font-black">19</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-slate-400">Required X</p>
-                <p className="text-2xl font-black">—</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-slate-400">Avg X</p>
-                <p className="text-2xl font-black">158.81x</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase text-slate-400">End Balance</p>
-                <p className="text-2xl font-black text-red-300">
-                  {hunt?.final_amount ? `$${Number(hunt.final_amount).toLocaleString()}` : "TBD"}
-                </p>
-              </div>
+            <div className="rounded-3xl border border-red-500/20 bg-black/50 p-10 text-center">
+              <h3 className="text-3xl font-black uppercase text-white">
+                A New Bonus Hunt
+              </h3>
+              <p className="mt-2 text-3xl font-black uppercase text-red-400">
+                Will Begin Soon
+              </p>
+              <p className="mt-6 uppercase tracking-widest text-zinc-400">
+                Predictions are currently closed
+              </p>
+            </div>
+
+            <div className="mt-10 grid grid-cols-2 gap-6 text-center md:grid-cols-5">
+              {["Start Balance", "Bonuses", "Required X", "Avg X", "End Balance"].map(
+                (label) => (
+                  <div key={label}>
+                    <p className="text-xs uppercase text-zinc-500">{label}</p>
+                    <p className="mt-3 text-2xl font-black">-</p>
+                  </div>
+                )
+              )}
             </div>
           </div>
 
           <div className="p-8 text-center">
-            <h2 className="text-2xl font-black">Guess the end balance</h2>
-            <p className="mt-2 text-sm text-slate-400">
+            <h2 className="text-2xl font-black uppercase">
+              Guess the end balance
+            </h2>
+            <p className="mt-2 text-sm text-zinc-400">
               Closest prediction wins. One entry per person.
             </p>
 
             <div className="mt-5 flex justify-center gap-3 text-xs font-black">
-              <span className="rounded-full bg-purple-500/30 px-4 py-2">1st $50</span>
-              <span className="rounded-full bg-purple-500/30 px-4 py-2">2nd $25</span>
-              <span className="rounded-full bg-purple-500/30 px-4 py-2">3rd $10</span>
+              <span className="rounded-full bg-red-500/20 px-4 py-2 text-red-200">
+                1st $50
+              </span>
+              <span className="rounded-full bg-red-500/20 px-4 py-2 text-red-200">
+                2nd $25
+              </span>
+              <span className="rounded-full bg-red-500/20 px-4 py-2 text-red-200">
+                3rd $10
+              </span>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-950/20 p-5">
+            <div className="mt-6 rounded-2xl border border-red-500/20 bg-red-950/10 p-5">
               <div className="grid gap-4 md:grid-cols-3">
                 {[0, 1, 2].map((i) => {
-                  const p = topThree[i];
+                  const p = sortedClosest[i];
                   const prize = i === 0 ? "$50" : i === 1 ? "$25" : "$10";
 
                   return (
-                    <div key={i} className="rounded-xl border border-purple-400/20 bg-slate-950/60 p-4">
-                      <p className="font-black text-yellow-300">{i + 1}{i === 0 ? "ST" : i === 1 ? "ND" : "RD"}</p>
-                      <p className="mt-2 font-bold">{p ? p.twitch_username || p.discord_username : "—"}</p>
-                      <p className="mt-2 text-2xl font-black text-purple-300">
+                    <div
+                      key={i}
+                      className="rounded-xl border border-red-500/20 bg-black/60 p-4"
+                    >
+                      <p className="font-black text-yellow-300">
+                        {i + 1}
+                        {i === 0 ? "ST" : i === 1 ? "ND" : "RD"}
+                      </p>
+                      <p className="mt-2 font-bold">
+                        {p ? p.twitch_username || p.discord_username : "—"}
+                      </p>
+                      <p className="mt-2 text-2xl font-black text-red-300">
                         {p ? `$${Number(p.guess_amount).toLocaleString()}` : "No guess"}
                       </p>
-                      <p className="mt-2 text-sm text-slate-400">Prize: {prize}</p>
+                      <p className="mt-2 text-sm text-zinc-400">
+                        Prize: {prize}
+                      </p>
                     </div>
                   );
                 })}
               </div>
 
               {hunt?.status === "completed" && hunt.final_amount && (
-                <p className="mt-5 text-sm text-slate-300">
+                <p className="mt-5 text-sm text-zinc-300">
                   Ending Balance:{" "}
                   <span className="font-black text-white">
                     ${Number(hunt.final_amount).toLocaleString()}
@@ -201,39 +208,95 @@ export default function BonusHuntPage() {
                 onChange={(e) => setPrediction(e.target.value)}
                 disabled={!hunt || hunt.status !== "open"}
                 placeholder="Enter prediction, e.g. 7250"
-                className="w-full rounded-xl border border-purple-400/30 bg-black px-4 py-3 text-white outline-none disabled:opacity-50"
+                className="w-full rounded-xl border border-red-500/30 bg-black px-4 py-3 text-white outline-none disabled:opacity-50"
               />
 
               <button
                 onClick={submitPrediction}
                 disabled={!hunt || hunt.status !== "open" || !session?.user}
-                className="rounded-xl bg-purple-500 px-6 font-black text-white hover:bg-purple-400 disabled:opacity-50"
+                className="rounded-xl bg-red-600 px-6 font-black text-white hover:bg-red-500 disabled:opacity-50"
               >
                 Submit
               </button>
             </div>
 
             {!session?.user && (
-              <p className="mt-3 text-sm text-yellow-300">Login with Discord to predict.</p>
+              <p className="mt-3 text-sm text-yellow-300">
+                Login with Discord to predict.
+              </p>
             )}
 
-            {message && <p className="mt-3 text-sm text-slate-300">{message}</p>}
+            {message && <p className="mt-3 text-sm text-zinc-300">{message}</p>}
           </div>
         </section>
 
-        <section className="mt-8 overflow-hidden rounded-2xl border border-blue-300/20 bg-slate-950/80">
-          <div className="px-5 py-4 text-xs font-black uppercase tracking-widest text-slate-400">
+        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-zinc-950/80">
+          <div className="flex items-center gap-3 px-5 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+            <Trophy className="h-5 w-5 text-red-400" />
+            Prediction Leaderboard
+          </div>
+
+          <div className="grid grid-cols-4 border-t border-red-500/10 px-5 py-3 text-xs uppercase text-zinc-500">
+            <span>Rank</span>
+            <span>User</span>
+            <span>Prediction</span>
+            <span>Difference</span>
+          </div>
+
+          {sortedClosest.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <Target className="h-14 w-14 text-red-500/50" />
+              <p className="mt-5 text-2xl font-black uppercase">
+                No predictions yet
+              </p>
+              <p className="mt-2 text-zinc-500">
+                Be the first to make a prediction.
+              </p>
+            </div>
+          ) : (
+            sortedClosest.map((p, index) => (
+              <div
+                key={p.id}
+                className="grid grid-cols-4 border-t border-white/10 px-5 py-4 text-sm"
+              >
+                <span className="font-black">#{index + 1}</span>
+                <span>{p.twitch_username || p.discord_username}</span>
+                <span className="font-black text-red-300">
+                  ${Number(p.guess_amount).toLocaleString()}
+                </span>
+                <span className="text-zinc-400">
+                  {hunt?.status === "completed" && hunt.final_amount
+                    ? `$${Math.abs(
+                        Number(p.guess_amount) - Number(hunt.final_amount)
+                      ).toLocaleString()}`
+                    : "-"}
+                </span>
+              </div>
+            ))
+          )}
+        </section>
+
+        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-zinc-950/80">
+          <div className="flex items-center gap-3 px-5 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
+            <Coins className="h-5 w-5 text-red-400" />
             Slots in this hunt
           </div>
 
-          {slots.map((slot, i) => (
-            <div key={slot.name} className="grid grid-cols-4 border-t border-white/10 px-5 py-4 text-sm">
-              <span className="font-bold">Bonus #{i + 1}</span>
-              <span className="font-black">{slot.name}</span>
-              <span>{slot.bet} · {slot.multi}</span>
-              <span className="text-right font-black text-emerald-400">{slot.payout}</span>
-            </div>
-          ))}
+          <div className="grid grid-cols-5 border-t border-red-500/10 px-5 py-3 text-xs uppercase text-zinc-500">
+            <span>#</span>
+            <span>Slot</span>
+            <span>Bet</span>
+            <span>Multi</span>
+            <span>Payout</span>
+          </div>
+
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <Flame className="h-14 w-14 text-red-500/50" />
+            <p className="mt-5 text-2xl font-black uppercase">
+              Slots will appear here
+            </p>
+            <p className="mt-2 text-zinc-500">Once the hunt begins.</p>
+          </div>
         </section>
       </div>
     </main>
