@@ -7,10 +7,20 @@ export async function GET() {
     return Response.json({ error: "Not logged in" }, { status: 401 });
   }
 
+  await supabaseAdmin.from("profiles").upsert(
+    {
+      Discord_Username: session.user.name,
+      Discord_Image: session.user.image,
+    },
+    {
+      onConflict: "Discord_Username",
+    }
+  );
+
   const { data, error } = await supabaseAdmin
     .from("profiles")
     .select("*")
-.eq("Discord_Username", session.user.name)
+    .eq("Discord_Username", session.user.name)
     .single();
 
   if (error) {
