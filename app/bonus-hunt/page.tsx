@@ -180,7 +180,7 @@ export default function BonusHuntPage() {
             <div className="mt-6 rounded-2xl border border-red-500/20 bg-red-950/10 p-5">
               <div className="grid gap-4 md:grid-cols-3">
                 {[0, 1, 2].map((i) => {
-                  const p = sortedClosest[i];
+const p = hunt?.status === "completed" ? sortedClosest[i] : null;
                   const prize = i === 0 ? "$50" : i === 1 ? "$25" : "$10";
 
                   return (
@@ -196,7 +196,7 @@ export default function BonusHuntPage() {
                         {p ? p.twitch_username || p.discord_username : "—"}
                       </p>
                       <p className="mt-2 text-2xl font-black text-red-300">
-                        {p ? `$${Number(p.guess_amount).toLocaleString()}` : "No guess"}
+{p ? `$${Number(p.guess_amount).toLocaleString()}` : "Pending"}
                       </p>
                       <p className="mt-2 text-sm text-zinc-400">
                         Prize: {prize}
