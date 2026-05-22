@@ -1,4 +1,5 @@
 import Discord from "next-auth/providers/discord";
+import Twitch from "next-auth/providers/twitch";
 import NextAuth from "next-auth";
 import { supabaseAdmin } from "@/lib/supabaseadmin";
 
@@ -8,6 +9,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.AUTH_DISCORD_ID!,
       clientSecret: process.env.AUTH_DISCORD_SECRET!,
     }),
+      Twitch({
+    clientId: process.env.AUTH_TWITCH_ID!,
+    clientSecret: process.env.AUTH_TWITCH_SECRET!,
+  }),
   ],
 
   callbacks: {
