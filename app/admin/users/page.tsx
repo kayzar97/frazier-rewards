@@ -84,6 +84,12 @@ export default async function AdminUsersPage({
 >
   Dashboard
 </Link>
+<Link
+  href="/admin/bonus-hunt"
+  className="rounded-xl border border-pink-500/40 bg-pink-500/10 px-5 py-2 font-bold text-pink-300 hover:bg-pink-500/20"
+>
+  Bonus Hunt
+</Link>
         </div>
 
         <AdminSettingsToggles />
