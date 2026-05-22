@@ -160,7 +160,7 @@ setSaved(true);
   </>
 ) : (
 <button
-  onClick={() => signIn("twitch", { callbackUrl: "/profile?connected=twitch" })}
+  onClick={() => (window.location.href = "/api/connect/twitch")}
   className="mt-4 rounded-xl border border-purple-500/50 bg-black/80 px-6 py-3 font-bold text-white transition hover:bg-black/80"
 >
   Connect Twitch

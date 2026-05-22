@@ -6,6 +6,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const code = url.searchParams.get("code");
   const userEmail = url.searchParams.get("state");
+  const redirectUri = `${process.env.AUTH_URL}/api/connect/twitch/callback`;
 
   if (!code || !userEmail) {
     return NextResponse.redirect(new URL("/profile?error=twitch", req.url));
@@ -21,7 +22,7 @@ export async function GET(req: NextRequest) {
       client_secret: process.env.AUTH_TWITCH_SECRET!,
       code,
       grant_type: "authorization_code",
-      redirect_uri: "http://localhost:3000/api/connect/twitch/callback",
+redirect_uri: redirectUri,
     }),
   });
 
