@@ -135,7 +135,7 @@ useEffect(() => {
 
     <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl">
       <iframe
-src="https://player.twitch.tv/?channel=frazierkaylive&parent=localhost"
+src="https://player.twitch.tv/?video=YOUR_VOD_ID&parent=frazier-rewards.vercel.app&autoplay=false"
         height="560"
         width="100%"
         allowFullScreen
