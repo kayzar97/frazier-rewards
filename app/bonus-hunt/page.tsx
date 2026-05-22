@@ -236,7 +236,7 @@ export default function BonusHuntPage() {
 
             {!session?.user && (
               <p className="mt-3 text-sm text-yellow-300">
-                Login with Discord to predict.
+                Login with Discord and connect Twitch to predict.
               </p>
             )}
 

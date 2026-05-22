@@ -28,6 +28,13 @@ export async function POST(req: Request) {
     .eq("Discord_Username", session.user.name)
     .single();
 
+    if (!profile?.twitch_username) {
+  return Response.json(
+    { error: "You must connect your Twitch account before entering bonus hunts." },
+    { status: 403 }
+  );
+}
+
   const { error } = await supabaseAdmin.from("bonus_hunt_predictions").upsert(
     {
       hunt_id: hunt.id,
