@@ -9,7 +9,7 @@ export async function GET() {
     .single();
 
   if (!hunt) {
-    return Response.json({ hunt: null, predictions: [] });
+    return Response.json({ hunt: null, predictions: [], slots: [] });
   }
 
   const { data: predictions } = await supabaseAdmin
@@ -18,5 +18,15 @@ export async function GET() {
     .eq("hunt_id", hunt.id)
     .order("guess_amount", { ascending: false });
 
-  return Response.json({ hunt, predictions: predictions || [] });
+  const { data: slots } = await supabaseAdmin
+    .from("bonus_hunt_slots")
+    .select("*")
+    .eq("hunt_id", hunt.id)
+    .order("created_at", { ascending: true });
+
+  return Response.json({
+    hunt,
+    predictions: predictions || [],
+    slots: slots || [],
+  });
 }
