@@ -35,7 +35,9 @@ function money(value: number) {
     maximumFractionDigits: 0,
   });
 }
-
+export const metadata = {
+  title: "Wager Rewards | FrazierRewards",
+};
 export default function WagerRewardsPage() {
   const [data, setData] = useState<WagerRewardsData | null>(null);
   const [doubleDownEnabled, setDoubleDownEnabled] = useState(true);
