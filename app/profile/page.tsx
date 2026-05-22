@@ -209,7 +209,7 @@ onChange={(e) => {
       <div className="mt-8 flex justify-end">
   <button
     onClick={() => signOut({ callbackUrl: "/", redirect: true })}
-className="cursor-pointer bg-black/90 backdrop-blur-md border border-red-500/50 rounded-xl px-8 py-3 font-bold text-white hover:bg-black/90 transition-all duration-200"
+className="cursor-pointer bg-black/90 border border-red-500/50 rounded-xl px-8 py-3 font-bold text-white hover:bg-black/90 transition-all duration-200"
   >
     Logout
   </button>

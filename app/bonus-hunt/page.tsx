@@ -120,7 +120,7 @@ export default function BonusHuntPage() {
 )}
         </section>
 
-<section className="mt-6 grid overflow-hidden rounded-3xl border border-red-500/20 bg-black/70 backdrop-blur-md shadow-[0_0_40px_rgba(255,0,0,0.2)] lg:grid-cols-2">
+<section className="mt-6 grid overflow-hidden rounded-3xl border border-red-500/20 bg-black/70 shadow-[0_0_40px_rgba(255,0,0,0.2)] lg:grid-cols-2">
           <div className="border-b border-red-500/10 p-8 lg:border-b-0 lg:border-r">
             <div className="mb-10 flex items-center justify-between">
               <h2 className="text-2xl font-black uppercase">
@@ -244,7 +244,7 @@ const p = hunt?.status === "completed" ? sortedClosest[i] : null;
           </div>
         </section>
 
-        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-black/70 backdrop-blur-md">
+        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-black/70">
           <div className="flex items-center gap-3 px-5 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
             <Trophy className="h-5 w-5 text-red-400" />
             Prediction Leaderboard
@@ -290,7 +290,7 @@ const p = hunt?.status === "completed" ? sortedClosest[i] : null;
           )}
         </section>
 
-        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-black/70 backdrop-blur-md">
+        <section className="mt-8 overflow-hidden rounded-2xl border border-red-500/20 bg-black/70">
           <div className="flex items-center gap-3 px-5 py-4 text-xs font-black uppercase tracking-widest text-zinc-400">
             <Coins className="h-5 w-5 text-red-400" />
             Slots in this hunt

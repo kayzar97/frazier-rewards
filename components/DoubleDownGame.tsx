@@ -100,7 +100,7 @@ export default function DoubleDownGame({
   }
 
   return (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/70">
       <div className="relative flex w-[95vw] max-w-[1800px] flex-col items-center rounded-2xl border border-yellow-500/30 bg-[#1b0705] p-4 text-center shadow-[0_0_40px_rgba(255,180,0,0.22)]">
         {!resultVideo ? (
           <>

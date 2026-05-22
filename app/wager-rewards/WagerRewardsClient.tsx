@@ -193,7 +193,7 @@ export default function WagerRewardsClient() {
           </p>
         </div>
 
-        <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 rounded-3xl bg-[#140404]/80 p-5 backdrop-blur-xl md:grid-cols-3">
+        <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 rounded-3xl bg-[#140404]/80 p-5 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
             <p className="text-xs tracking-[0.3em] text-white/40">USERNAME</p>
             <p className="mt-1 text-xl font-bold">{data.username}</p>
@@ -228,7 +228,7 @@ export default function WagerRewardsClient() {
             return (
               <div
                 key={item.tier}
-                className="rounded-2xl border border-red-500/50 bg-[#140404]/80 p-5 text-left backdrop-blur-xl"
+                className="rounded-2xl border border-red-500/50 bg-[#140404]/80 p-5 text-left"
               >
                 <div className="grid grid-cols-5 items-center gap-4">
                   <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-center font-black text-yellow-300">

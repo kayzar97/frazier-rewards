@@ -97,21 +97,21 @@ window.dispatchEvent(new Event("vault-count-updated"));
         </p>
 
         <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-3xl bg-[#140404]/80 p-5 backdrop-blur-xl">
+          <div className="rounded-3xl bg-[#140404]/80 p-5">
             <p className="text-xs tracking-[0.3em] text-yellow-300/70">
               PENDING
             </p>
             <p className="mt-1 text-3xl font-black">{pending.length}</p>
           </div>
 
-          <div className="rounded-3xl bg-[#140404]/80 p-5 backdrop-blur-xl">
+          <div className="rounded-3xl bg-[#140404]/80 p-5">
             <p className="text-xs tracking-[0.3em] text-emerald-300/70">
               APPROVED
             </p>
             <p className="mt-1 text-3xl font-black">{approved.length}</p>
           </div>
 
-          <div className="rounded-3xl bg-[#140404]/80 p-5 backdrop-blur-xl">
+          <div className="rounded-3xl bg-[#140404]/80 p-5">
             <p className="text-xs tracking-[0.3em] text-white/50">
               PAID
             </p>
@@ -121,7 +121,7 @@ window.dispatchEvent(new Event("vault-count-updated"));
 
         <div className="mt-8 space-y-4">
           {claims.length === 0 ? (
-            <div className="rounded-3xl bg-[#140404]/80 p-8 backdrop-blur-xl">
+            <div className="rounded-3xl bg-[#140404]/80 p-8">
               <p className="text-white/70">
                 You have no rewards in The Vault yet.
               </p>
@@ -132,7 +132,7 @@ window.dispatchEvent(new Event("vault-count-updated"));
     .map((claim) => (
               <div
                 key={claim.id}
-                className="grid grid-cols-4 items-center gap-4 rounded-2xl bg-[#140404]/80 p-5 text-left backdrop-blur-xl"
+                className="grid grid-cols-4 items-center gap-4 rounded-2xl bg-[#140404]/80 p-5 text-left"
               >
                 <div>
                   <p className="text-xs tracking-[0.25em] text-white/40">

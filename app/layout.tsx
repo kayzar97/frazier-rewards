@@ -49,7 +49,7 @@ if (MAINTENANCE_MODE || (TEAM_TESTING_MODE && !allowedTester)) {
     <html lang="en">
       <body className="min-h-screen bg-black text-white">
         <div className="flex min-h-screen items-center justify-center px-6">
-          <div className="max-w-xl rounded-3xl border border-yellow-400/30 bg-zinc-950/90 p-10 text-center shadow-[0_0_50px_rgba(250,204,21,0.2)] backdrop-blur-xl">
+          <div className="max-w-xl rounded-3xl border border-yellow-400/30 bg-zinc-950/90 p-10 text-center shadow-[0_0_50px_rgba(250,204,21,0.2)]">
             
             <h1 className={`${leagueSpartan.className} text-4xl font-bold text-yellow-300`}>
               FrazierRewards
@@ -89,7 +89,7 @@ if (MAINTENANCE_MODE || (TEAM_TESTING_MODE && !allowedTester)) {
   />
 
   {/* Dark overlay */}
-  <div className="fixed inset-0 -z-10 bg-black/60 backdrop-blur-[1.5px]" />
+  <div className="fixed inset-0 -z-10 bg-black/60" />
 
   {/* App content */}
 <div className="relative z-10">

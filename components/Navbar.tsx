@@ -74,7 +74,7 @@ useEffect(() => {
   };
 }, [session]);
   return (
-<nav className={`${cinzel.className} fixed left-0 top-0 z-50 w-full border-b border-yellow-500/20 bg-gradient-to-r from-[#2b0000] via-[#5a0000] to-[#2b0000] shadow-[0_0_25px_rgba(255,0,0,0.2)] backdrop-blur-md`}>
+<nav className={`${cinzel.className} fixed left-0 top-0 z-50 w-full border-b border-yellow-500/20 bg-gradient-to-r from-[#2b0000] via-[#5a0000] to-[#2b0000] shadow-[0_0_25px_rgba(255,0,0,0.2)]`}>
       {/* glow layer */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,rgba(255,215,0,0.15),transparent_60%)]" />
 

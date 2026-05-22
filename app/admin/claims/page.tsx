@@ -158,7 +158,7 @@ const filteredClaims = claims.filter((claim) => {
     <option value="denied">Denied</option>
   </select>
 </div>
-        <div className="mt-8 overflow-hidden rounded-3xl border border-red-500/30 bg-[#140404]/80 backdrop-blur-xl">
+        <div className="mt-8 overflow-hidden rounded-3xl border border-red-500/30 bg-[#140404]/80">
           <table className="w-full text-left text-sm">
             <thead className="bg-red-950/50 text-yellow-300">
               <tr>
