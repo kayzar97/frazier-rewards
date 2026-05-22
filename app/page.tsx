@@ -40,6 +40,18 @@ export default function RewardsHubHomepage() {
 
   const [isLive, setIsLive] = useState(false);
 
+    const twitchChannel = "FrazierKay";
+const latestVodId = "2775922136";
+
+  const twitchParent =
+    process.env.NODE_ENV === "development"
+      ? "localhost"
+      : "frazier-rewards.vercel.app";
+
+const twitchSrc = isLive
+  ? `https://player.twitch.tv/?channel=${twitchChannel}&parent=${twitchParent}&autoplay=false`
+  : `https://player.twitch.tv/?video=${latestVodId}&parent=${twitchParent}&autoplay=false`;
+
 useEffect(() => {
   const checkLive = async () => {
     try {
@@ -134,13 +146,13 @@ useEffect(() => {
     </p>
 
     <div className="mt-8 overflow-hidden rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl">
-      <iframe
-src="https://player.twitch.tv/?video=YOUR_VOD_ID&parent=frazier-rewards.vercel.app&autoplay=false"
-        height="560"
-        width="100%"
-        allowFullScreen
-        className="aspect-video w-full"
-      />
+<iframe
+  src={twitchSrc}
+  height="560"
+  width="100%"
+  allowFullScreen
+  className="aspect-video w-full"
+/>
     </div>
   </div>
 </section>
