@@ -1,54 +1,147 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
-const bonuses = [
-  { name: "Phoenix DuelReels", bet: "$1", multi: "4093.9x", payout: "$4,093.90" },
-  { name: "Gates of Anubis", bet: "$1", multi: "248.95x", payout: "$248.95" },
-  { name: "Le Cowboy", bet: "$1", multi: "568.4x", payout: "$568.40" },
-];
+type Hunt = {
+  id: number;
+  title: string;
+  status: "open" | "locked" | "completed";
+  final_amount: number | null;
+};
+
+type Prediction = {
+  id: number;
+  discord_username: string;
+  twitch_username: string | null;
+  guess_amount: number;
+};
 
 export default function BonusHuntPage() {
+  const { data: session } = useSession();
+
+  const [hunt, setHunt] = useState<Hunt | null>(null);
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
   const [prediction, setPrediction] = useState("");
+  const [message, setMessage] = useState("");
+
+  async function loadHunt() {
+    const res = await fetch("/api/bonus-hunt");
+    const data = await res.json();
+
+    setHunt(data.hunt);
+    setPredictions(data.predictions || []);
+  }
+
+  useEffect(() => {
+    loadHunt();
+  }, []);
+
+  async function submitPrediction() {
+    setMessage("");
+
+    if (!prediction) {
+      setMessage("Enter a prediction first.");
+      return;
+    }
+
+    const res = await fetch("/api/bonus-hunt/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        guessAmount: prediction,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setMessage(data.error || "Failed to submit prediction.");
+      return;
+    }
+
+    setMessage("Prediction submitted.");
+    setPrediction("");
+    loadHunt();
+  }
+
+  const sortedClosest =
+    hunt?.status === "completed" && hunt.final_amount
+      ? [...predictions].sort(
+          (a, b) =>
+            Math.abs(a.guess_amount - Number(hunt.final_amount)) -
+            Math.abs(b.guess_amount - Number(hunt.final_amount))
+        )
+      : predictions;
+
+  const winner = sortedClosest[0];
 
   return (
     <main className="min-h-screen px-6 py-24 text-white">
       <div className="mx-auto max-w-7xl">
-        <h1 className="mb-8 text-center text-5xl font-black">
+        <h1 className="mb-4 text-center text-5xl font-black">
           Live Bonus Hunt
         </h1>
 
+        <p className="mb-10 text-center text-zinc-400">
+          Predict the final bonus hunt amount before Frazier starts the hunt.
+        </p>
+
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-<section className="rounded-2xl border border-red-500/40 bg-bg-[#140404]/75 backdrop-blur-xl p-6 shadow-[0_0_25px_rgba(255,0,0,0.25)]">
-            <h2 className="text-center text-2xl font-bold">Hunt Stats</h2>
+          <section className="rounded-2xl border border-red-500/40 bg-[#140404]/75 p-6 shadow-[0_0_25px_rgba(255,0,0,0.25)] backdrop-blur-xl">
+            <h2 className="text-center text-2xl font-bold">Hunt Status</h2>
 
-            <div className="mt-5 grid grid-cols-4 gap-3 text-center">
-              <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                <p className="text-xs text-zinc-400">Start</p>
-                <p className="font-bold">$3,350</p>
+            {!hunt ? (
+              <div className="mt-6 rounded-xl border border-dashed border-red-500/40 bg-white/5 p-5 text-center text-sm text-zinc-400">
+                No prediction session is open yet.
               </div>
-              <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                <p className="text-xs text-zinc-400">Bonuses</p>
-                <p className="font-bold">29</p>
-              </div>
-              <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                <p className="text-xs text-zinc-400">Avg</p>
-                <p className="font-bold">226.8x</p>
-              </div>
-              <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-3">
-                <p className="text-xs text-zinc-400">Required</p>
-                <p className="font-bold">0x</p>
-              </div>
-            </div>
+            ) : (
+              <div className="mt-6 space-y-4 text-center">
+                <p className="text-3xl font-black">{hunt.title}</p>
 
-            <div className="mt-6 rounded-xl border border-red-500/40 bg-[#140404]/75 backdrop-blur-xl p-5 text-center">
-              <p className="text-xs uppercase text-zinc-400">Current Best</p>
-              <p className="mt-1 text-xl font-bold">Phoenix DuelReels</p>
-              <p className="mt-2 text-white-300">$4,093.90</p>
-            </div>
+                <div className="inline-flex rounded-full border border-red-500/50 bg-black px-5 py-2 text-sm font-bold uppercase text-red-300">
+                  {hunt.status}
+                </div>
+
+                {hunt.status === "open" && (
+                  <p className="text-zinc-400">
+                    Predictions are open. Submit before the hunt starts.
+                  </p>
+                )}
+
+                {hunt.status === "locked" && (
+                  <p className="text-yellow-300">
+                    Predictions are locked. The hunt has started.
+                  </p>
+                )}
+
+                {hunt.status === "completed" && (
+                  <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-5">
+                    <p className="text-xs uppercase text-zinc-400">
+                      Final Amount
+                    </p>
+                    <p className="text-4xl font-black text-emerald-300">
+                      ${Number(hunt.final_amount).toLocaleString()}
+                    </p>
+
+                    {winner && (
+                      <p className="mt-4 text-sm text-white">
+                        Winner:{" "}
+                        <span className="font-bold text-yellow-300">
+                          {winner.twitch_username || winner.discord_username}
+                        </span>{" "}
+                        guessed ${Number(winner.guess_amount).toLocaleString()}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
           </section>
 
-<section className="rounded-2xl border border-red-500/40 bg-[#140404]/75 backdrop-blur-xl p-6 shadow-[0_0_25px_rgba(255,0,0,0.25)]">
+          <section className="rounded-2xl border border-red-500/40 bg-[#140404]/75 p-6 shadow-[0_0_25px_rgba(255,0,0,0.25)] backdrop-blur-xl">
             <h2 className="text-center text-2xl font-bold">Predictions</h2>
 
             <p className="mt-4 text-center text-zinc-400">
@@ -59,40 +152,67 @@ export default function BonusHuntPage() {
               <input
                 value={prediction}
                 onChange={(e) => setPrediction(e.target.value)}
+                disabled={!hunt || hunt.status !== "open"}
                 placeholder="Enter prediction, e.g. 7250"
-className="w-full rounded-xl border border-red-500/30 bg-black px-4 py-3 text-white outline-none focus:border-red-400"
+                className="w-full rounded-xl border border-red-500/30 bg-black px-4 py-3 text-white outline-none focus:border-red-400 disabled:cursor-not-allowed disabled:opacity-50"
               />
 
-              <button className="rounded-xl bg-red-500 px-6 font-bold text-white transition hover:bg-red-400 shadow-[0_0_12px_rgba(255,0,0,0.4)]">
+              <button
+                onClick={submitPrediction}
+                disabled={!hunt || hunt.status !== "open" || !session?.user}
+                className="rounded-xl bg-red-500 px-6 font-bold text-white shadow-[0_0_12px_rgba(255,0,0,0.4)] transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 Submit
               </button>
             </div>
 
-            <div className="mt-6 rounded-xl border border-dashed border-red-500/40 bg-white/5 p-5 text-center text-sm text-zinc-400">
-              No prediction session is open yet.
-            </div>
+            {!session?.user && (
+              <p className="mt-3 text-center text-sm text-yellow-300">
+                Login with Discord to submit a prediction.
+              </p>
+            )}
+
+            {message && (
+              <p className="mt-3 text-center text-sm text-zinc-300">
+                {message}
+              </p>
+            )}
           </section>
         </div>
 
-        <section className="mx-auto mt-8 max-w-4xl rounded-2xl border border-red-500/50 bg-[#140404]/75 backdrop-blur-xl overflow-hidden">
+        <section className="mx-auto mt-8 max-w-4xl overflow-hidden rounded-2xl border border-red-500/50 bg-[#140404]/75 backdrop-blur-xl">
           <div className="grid grid-cols-4 bg-red-950/50 px-4 py-3 text-xs uppercase text-zinc-300">
-            <span>Bonus</span>
-            <span>Bet</span>
-            <span>Multi</span>
-            <span>Payout</span>
+            <span>Rank</span>
+            <span>User</span>
+            <span>Guess</span>
+            <span>Difference</span>
           </div>
 
-          {bonuses.map((bonus) => (
-            <div
-              key={bonus.name}
-              className="grid grid-cols-4 border-t border-white/10 px-4 py-3 text-sm"
-            >
-              <span className="font-bold">{bonus.name}</span>
-              <span>{bonus.bet}</span>
-              <span className="text-white-300">{bonus.multi}</span>
-              <span className="text-emerald-400">{bonus.payout}</span>
+          {sortedClosest.length === 0 ? (
+            <div className="p-6 text-center text-sm text-zinc-400">
+              No predictions yet.
             </div>
-          ))}
+          ) : (
+            sortedClosest.map((p, index) => (
+              <div
+                key={p.id}
+                className="grid grid-cols-4 border-t border-white/10 px-4 py-3 text-sm"
+              >
+                <span className="font-bold">#{index + 1}</span>
+                <span>{p.twitch_username || p.discord_username}</span>
+                <span className="text-emerald-400">
+                  ${Number(p.guess_amount).toLocaleString()}
+                </span>
+                <span className="text-zinc-300">
+                  {hunt?.status === "completed" && hunt.final_amount
+                    ? `$${Math.abs(
+                        Number(p.guess_amount) - Number(hunt.final_amount)
+                      ).toLocaleString()}`
+                    : "-"}
+                </span>
+              </div>
+            ))
+          )}
         </section>
       </div>
     </main>
