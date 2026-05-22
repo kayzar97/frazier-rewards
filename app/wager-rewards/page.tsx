@@ -48,6 +48,10 @@ export default function WagerRewardsPage() {
   const [isVip, setIsVip] = useState(false);
 
   useEffect(() => {
+  document.title = "Wager Rewards | FrazierRewards";
+}, []);
+
+  useEffect(() => {
     async function fetchRewards() {
       const settingsRes = await fetch("/api/settings");
       const settings = await settingsRes.json();
