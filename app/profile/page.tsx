@@ -39,7 +39,6 @@ useEffect(() => {
   }
 
   async function loadProfile() {
-    setProfileLoading(true);
 
     const res = await fetch("/api/profile");
     const data = await res.json();
@@ -51,14 +50,9 @@ useEffect(() => {
       setSaved(localStorage.getItem("spartansUsernameSaved") === "true");
     }
 
-    if (data?.profile?.twitch_username) {
-      setTwitchUsername(data.profile.twitch_username);
-    }
 
-    if (data?.profile?.twitch_image) {
-      setTwitchAvatar(data.profile.twitch_image);
-    }
-
+setTwitchUsername(data?.profile?.twitch_username || "");
+setTwitchAvatar(data?.profile?.twitch_image || "");
     setProfileLoading(false);
   }
 
