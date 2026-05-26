@@ -210,42 +210,50 @@ setSaved(true);
 </div>
 </div>
 
-        {/* 🔴 EDIT SECTION */}
-        <div className="mt-8 rounded-2xl border border-red-500/60 bg-black/100 p-8 shadow-[0_0_25px_rgba(239,68,68,0.25)]">
-          <label className="mb-3 block text-sm uppercase text-zinc-300">
-            Spartans Username
-          </label>
+<div className="mt-8 rounded-3xl border border-red-500/50 bg-black/80 p-8 shadow-[0_0_30px_rgba(239,68,68,0.18)] backdrop-blur-xl">
+  <div className="mb-6 flex items-center justify-between">
+    <div>
+      <h2 className="text-2xl font-black text-white">
+        Spartans Account
+      </h2>
+      <p className="mt-1 text-sm text-zinc-400">
+        Link the username you use on Spartans.
+      </p>
+    </div>
 
-          <input
-            value={username}
-onChange={(e) => {
-  setUsername(e.target.value);
-  setSaved(false);
-  localStorage.removeItem("spartansUsernameSaved");
-}}
-            placeholder="Enter your Spartans username"
-            className="w-full rounded-xl border border-red-500/60 bg-red-950 px-5 py-4 text-white outline-none focus:border-red-400"
-          />
+    {saved && (
+      <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-4 py-2 text-xs font-black text-emerald-300">
+        SAVED
+      </span>
+    )}
+  </div>
 
-          <p className="mt-3 text-sm text-zinc-400">
-            Link your Spartans account to win prizes and participate in activities.
-          </p>
+  <label className="mb-2 block text-xs font-bold uppercase tracking-[0.25em] text-yellow-300/80">
+    Spartans Username
+  </label>
 
-<div className="mt-6 flex items-center gap-3">
+  <input
+    value={username}
+    onChange={(e) => {
+      setUsername(e.target.value);
+      setSaved(false);
+      localStorage.removeItem("spartansUsernameSaved");
+    }}
+    placeholder="Enter your Spartans username"
+    className="w-full rounded-2xl border border-red-500/50 bg-red-950/70 px-5 py-4 text-lg font-bold text-white outline-none transition focus:border-yellow-300 focus:shadow-[0_0_18px_rgba(250,204,21,0.25)]"
+  />
+
+  <p className="mt-3 text-sm text-zinc-400">
+    This username is used for reward claims, giveaways, and account checks.
+  </p>
+
   <button
     onClick={saveProfile}
-    className="cursor-pointer rounded-xl border border-red-400 px-8 py-3 font-bold text-white hover:bg-red-500/20"
+    className="mt-6 rounded-2xl border border-yellow-400/40 bg-yellow-500/10 px-8 py-3 font-black text-yellow-300 transition hover:bg-yellow-500/20 hover:shadow-[0_0_18px_rgba(250,204,21,0.25)]"
   >
-    Save
+    Save Spartans Username
   </button>
-
-  {saved && (
-    <span className="text-sm text-emerald-400">
-      Username saved.
-    </span>
-  )}
 </div>
-        </div>
       <div className="mt-8 flex justify-end">
   <button
     onClick={() => signOut({ callbackUrl: "/", redirect: true })}
