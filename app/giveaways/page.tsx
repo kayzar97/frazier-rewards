@@ -194,6 +194,64 @@ window.dispatchEvent(new Event("vault-count-updated"));
             ))
           )}
         </div>
+        <div className="mt-10 rounded-3xl border border-yellow-500/20 bg-black/70 p-8 shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
+  <div className="mb-6 flex items-center gap-3">
+    <div className="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
+
+    <h2 className="text-3xl font-black text-white">
+      Guide & FAQ
+    </h2>
+  </div>
+
+  <div className="space-y-5 text-[15px] leading-8 text-zinc-300">
+    <p>
+      • Rewards and giveaway prizes are processed manually. Delivery times may vary depending on review volume and event schedules.
+    </p>
+
+    <p>
+      • Claims that remain unsubmitted for extended periods may become invalid after leaderboard resets or giveaway expiration dates.
+    </p>
+
+    <p>
+      • All rewards must be claimed through the official Vault system. Staff will never ask you to claim rewards elsewhere.
+    </p>
+
+    <p>
+      • Ensure your Spartans username and connected Twitch account are correct before submitting claims.
+    </p>
+
+    <p>
+      • Attempting to abuse rewards through alternate accounts, farming, automation, or misleading activity may result in claim rejection.
+    </p>
+
+    <div className="rounded-2xl border border-yellow-500/20 bg-yellow-500/5 p-5">
+      <h3 className="mb-4 text-lg font-black text-yellow-300">
+        Claim Status Meanings
+      </h3>
+
+      <div className="space-y-3">
+        <p>
+          <span className="font-black text-emerald-400">PAID</span>
+          {" "}— Your reward has been approved and completed.
+        </p>
+
+        <p>
+          <span className="font-black text-yellow-300">PENDING</span>
+          {" "}— Your claim is awaiting review or processing.
+        </p>
+
+        <p>
+          <span className="font-black text-red-400">REJECTED</span>
+          {" "}— Your claim was denied due to verification or eligibility issues.
+        </p>
+      </div>
+    </div>
+
+    <p>
+      • Support or verification requests will only come from official Frazier Rewards staff or verified Discord accounts.
+    </p>
+  </div>
+</div>
       </section>
     </main>
   );
