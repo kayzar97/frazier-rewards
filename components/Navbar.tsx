@@ -14,7 +14,7 @@ const cinzel = Cinzel({
 
 export default function Navbar() {
   const [role, setRole] = useState("user");
-  const { data: session } = useSession();
+const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const [showCaptcha, setShowCaptcha] = useState(false);
 const [captchaLoading, setCaptchaLoading] = useState(false);
@@ -42,7 +42,11 @@ const [captchaLoading, setCaptchaLoading] = useState(false);
 
   useEffect(() => {
     async function fetchRole() {
-      if (!session?.user?.name) return;
+if (status === "loading") return;
+if (!session?.user?.name) {
+  setRole("user");
+  return;
+}
 
       const res = await fetch("/api/profile");
       const data = await res.json();
@@ -51,13 +55,14 @@ const [captchaLoading, setCaptchaLoading] = useState(false);
     }
 
     fetchRole();
-  }, [session]);
+}, [session, status]);
 useEffect(() => {
   async function fetchVaultCount() {
-    if (!session) {
-      setVaultCount(0);
-      return;
-    }
+if (status === "loading") return;
+if (!session) {
+  setVaultCount(0);
+  return;
+}
 
     const res = await fetch("/api/vault/count");
     const data = await res.json();
@@ -72,7 +77,7 @@ useEffect(() => {
   return () => {
     window.removeEventListener("vault-count-updated", fetchVaultCount);
   };
-}, [session]);
+}, [session, status]);
   return (
 <nav className={`${cinzel.className} fixed left-0 top-0 z-50 w-full border-b border-yellow-500/20 bg-gradient-to-r from-[#2b0000] via-[#5a0000] to-[#2b0000] shadow-[0_0_25px_rgba(255,0,0,0.2)]`}>
       {/* glow layer */}
@@ -152,7 +157,9 @@ src="/Frazier-rewards-logo.png"
         </div>
 
         <div className="ml-auto flex items-center">
-          {!session ? (
+{status === "loading" ? (
+  <div className="h-10 w-40 animate-pulse rounded-xl bg-white/10" />
+) : status === "unauthenticated" ? (
             <button
 onClick={() => setShowCaptcha(true)}
 className="relative z-50 pointer-events-auto flex items-center gap-1.5 rounded-lg bg-[#5865F2] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#4752C4] active:scale-[0.98]"
