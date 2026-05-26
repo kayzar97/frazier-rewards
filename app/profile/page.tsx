@@ -131,51 +131,87 @@ setSaved(true);
 
 {/* Twitch Card */}
 <div className="rounded-xl border border-purple-500 bg-zinc-800 p-5">
-  <div className="flex items-center gap-4">
-{twitchAvatar ? (
-  <img
-    src={twitchAvatar}
-    alt="Twitch profile"
-    className="h-16 w-16 rounded-full border border-white/20"
-  />
-) : (
-  <div className="h-16 w-16 rounded-full border border-white/20" />
-)}
+  {profileLoading ? (
+    <div className="animate-pulse">
+      <div className="flex items-center gap-4">
+        <div className="h-16 w-16 rounded-full bg-white/10" />
 
-    <div>
-      <p className="text-xl font-bold text-white">
-{twitchUsername
-  ? twitchUsername.charAt(0).toUpperCase() + twitchUsername.slice(1)
-  : "Twitch"}
-      </p>
+        <div className="space-y-2">
+          <div className="h-5 w-32 rounded bg-white/10" />
+          <div className="h-4 w-24 rounded bg-white/10" />
+        </div>
+      </div>
 
-      <p className="text-sm text-zinc-400">
-        {twitchUsername ? "Twitch connected" : "Twitch not connected"}
-      </p>
+      <div className="mt-4 h-10 w-40 rounded bg-white/10" />
     </div>
-  </div>
+  ) : (
+    <>
+      <div className="flex items-center gap-4">
+        {twitchAvatar ? (
+          <img
+            src={twitchAvatar}
+            alt="Twitch profile"
+            className="h-16 w-16 rounded-full border border-white/20"
+          />
+        ) : (
+          <div className="h-16 w-16 rounded-full border border-white/20" />
+        )}
 
-{twitchUsername ? (
-  <>
-    <span className="mt-4 inline-block rounded-md bg-emerald-500/20 px-3 py-1 text-sm font-bold text-emerald-300">
-      CONNECTED
-    </span>
+        <div>
+          <p className="text-xl font-bold text-white">
+            {twitchUsername
+              ? twitchUsername.charAt(0).toUpperCase() +
+                twitchUsername.slice(1)
+              : "Twitch"}
+          </p>
 
-    <button
-      onClick={disconnectTwitch}
-      className="mt-3 ml-3 rounded-xl border border-red-500/50 bg-black/80 px-6 py-2 font-bold text-white transition hover:bg-red-500/20"
-    >
-      Disconnect
-    </button>
-  </>
-) : (
-<button
-  onClick={() => (window.location.href = "/api/connect/twitch")}
-  className="mt-4 rounded-xl border border-purple-500/50 bg-black/80 px-6 py-3 font-bold text-white transition hover:bg-black/80"
->
-  Connect Twitch
-</button>
-)}
+          <p className="text-sm text-zinc-400">
+            {twitchUsername
+              ? "Twitch connected"
+              : "Twitch not connected"}
+          </p>
+        </div>
+      </div>
+
+      {twitchUsername ? (
+        <>
+          <span className="mt-4 inline-block rounded-md bg-emerald-500/20 px-3 py-1 text-sm font-bold text-emerald-300">
+            CONNECTED
+          </span>
+
+          <button
+            onClick={disconnectTwitch}
+            className="mt-3 ml-3 rounded-xl border border-red-500/50 bg-black/80 px-6 py-2 font-bold text-white transition hover:bg-red-500/20"
+          >
+            Disconnect
+          </button>
+
+          <div className="mt-4">
+            <p className="text-sm font-bold text-yellow-300">
+              This Twitch account is eligible to claim future giveaways.
+            </p>
+          </div>
+        </>
+      ) : (
+        <>
+          <button
+            onClick={() =>
+              (window.location.href = "/api/connect/twitch")
+            }
+            className="mt-4 rounded-xl border border-purple-500/50 bg-black/80 px-6 py-3 font-bold text-white transition hover:bg-black/80"
+          >
+            Connect Twitch
+          </button>
+
+          <div className="mt-4">
+            <p className="text-sm font-bold text-yellow-300">
+              You must connect your Twitch account in order to claim any giveaways won on stream.
+            </p>
+          </div>
+        </>
+      )}
+    </>
+  )}
 </div>
 </div>
 </div>
