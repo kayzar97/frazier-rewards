@@ -10,6 +10,7 @@ const [username, setUsername] = useState("");
 const [twitchUsername, setTwitchUsername] = useState("");
 const [twitchAvatar, setTwitchAvatar] = useState("");
 const [saved, setSaved] = useState(false);
+const [profileLoading, setProfileLoading] = useState(true);
 async function disconnectTwitch() {
   const confirmed = confirm(
     "Disconnect Twitch? The previous Twitch account will be kept in our records for giveaway security."
@@ -30,30 +31,39 @@ async function disconnectTwitch() {
   setTwitchAvatar("");
 }
 useEffect(() => {
-  if (!session?.user?.name) return;
+  if (status === "loading") return;
 
-async function loadProfile() {
-  const res = await fetch("/api/profile");
-  const data = await res.json();
-  setRole(data?.profile?.role || "user");
-
-if (data?.profile?.spartans_username) {
-  setUsername(data.profile.spartans_username);
-  setSaved(localStorage.getItem("spartansUsernameSaved") === "true");
-}
-
-  
-  if (data?.profile?.twitch_username) {
-    setTwitchUsername(data.profile.twitch_username);
+  if (!session?.user?.name) {
+    setProfileLoading(false);
+    return;
   }
 
-  if (data?.profile?.twitch_image) {
-    setTwitchAvatar(data.profile.twitch_image);
+  async function loadProfile() {
+    setProfileLoading(true);
+
+    const res = await fetch("/api/profile");
+    const data = await res.json();
+
+    setRole(data?.profile?.role || "user");
+
+    if (data?.profile?.spartans_username) {
+      setUsername(data.profile.spartans_username);
+      setSaved(localStorage.getItem("spartansUsernameSaved") === "true");
+    }
+
+    if (data?.profile?.twitch_username) {
+      setTwitchUsername(data.profile.twitch_username);
+    }
+
+    if (data?.profile?.twitch_image) {
+      setTwitchAvatar(data.profile.twitch_image);
+    }
+
+    setProfileLoading(false);
   }
-}
 
   loadProfile();
-}, [session]);
+}, [session, status]);
 
 async function saveProfile() {
   const res = await fetch("/api/profile", {
