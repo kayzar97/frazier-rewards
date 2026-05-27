@@ -14,6 +14,16 @@ type Claim = {
 gamble_result?: string;
 };
 
+type GiveawayPrize = {
+  id: number;
+  prize_name: string;
+  prize_amount: number;
+  winner_type: "twitch" | "spartans";
+  winner_username: string;
+  status: string;
+  created_at: string;
+};
+
 function money(value: number) {
   return value.toLocaleString("en-US", {
     style: "currency",
@@ -23,12 +33,14 @@ function money(value: number) {
 }
 
 export default function VaultPage() {
-  const [activeTab, setActiveTab] = useState<
-"rewards" | "giveaways"
+const [activeTab, setActiveTab] = useState<
+  "rewards" | "giveaways" | "history"
 >("rewards");
 
   const [claims, setClaims] = useState<Claim[]>([]);
+  const [giveawayPrizes, setGiveawayPrizes] = useState<GiveawayPrize[]>([]);
   const [loading, setLoading] = useState(true);
+  const [totalGivenAway, setTotalGivenAway] = useState(0);
 
   useEffect(() => {
 
@@ -38,6 +50,15 @@ export default function VaultPage() {
       const data = await res.json();
 
       setClaims(data.claims || []);
+      const giveawayRes = await fetch("/api/giveaway-prizes");
+const giveawayData = await giveawayRes.json();
+
+setGiveawayPrizes(giveawayData.prizes || []);
+
+const totalRes = await fetch("/api/giveaway-prizes/total-paid");
+const totalData = await totalRes.json();
+
+setTotalGivenAway(totalData.total || 0);
       setLoading(false);
     }
 
@@ -75,9 +96,59 @@ async function confirmSpartans(claimId: number) {
 window.dispatchEvent(new Event("vault-count-updated"));
   alert("Spartans account confirmed!");
 }
+async function claimGiveawayPrize(prizeId: number) {
+  const confirmed = confirm("Claim this giveaway prize?");
+  if (!confirmed) return;
+
+  const res = await fetch("/api/giveaway-prizes/claim", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prizeId }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Failed to claim prize");
+    return;
+  }
+
+  setGiveawayPrizes((prev) =>
+    prev.map((prize) =>
+      prize.id === prizeId ? { ...prize, status: "claimed" } : prize
+    )
+  );
+
+  alert("Prize claimed! Waiting for admin approval.");
+}
   const pending = claims.filter((claim) => claim.status === "pending");
   const approved = claims.filter((claim) => claim.status === "approved");
   const paid = claims.filter((claim) => claim.status === "paid");
+  const claimHistory = [
+  ...claims.map((claim) => ({
+    id: `reward-${claim.id}`,
+    type: "Wager Reward",
+    name: `Tier ${claim.tier}`,
+    amount: claim.reward_amount,
+    status: claim.status,
+    created_at: claim.created_at,
+  })),
+
+  ...giveawayPrizes.map((prize) => ({
+    id: `giveaway-${prize.id}`,
+    type: "Giveaway",
+    name: prize.prize_name,
+    amount: prize.prize_amount,
+    status: prize.status,
+    created_at: prize.created_at,
+  })),
+].sort(
+  (a, b) =>
+    new Date(b.created_at).getTime() -
+    new Date(a.created_at).getTime()
+);
 
   if (loading) {
     return (
@@ -100,27 +171,18 @@ window.dispatchEvent(new Event("vault-count-updated"));
           Claim and track your unlocked Wager Rewards and Giveaways.
         </p>
 
-        <div className="mx-auto mt-8 grid max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="rounded-3xl bg-[#140404]/80 p-5">
-            <p className="text-xs tracking-[0.3em] text-yellow-300/70">
-              PENDING
-            </p>
-            <p className="mt-1 text-3xl font-black">{pending.length}</p>
-          </div>
+<div className="mx-auto mt-8 max-w-4xl rounded-3xl border border-red-400/40 bg-black/70 p-8 text-center">
+  <p className="text-lg font-black uppercase tracking-[0.25em] text-yellow-300">
+    Giveaways Paid
+  </p>
 
-          <div className="rounded-3xl bg-[#140404]/80 p-5">
-            <p className="text-xs tracking-[0.3em] text-emerald-300/70">
-              APPROVED
-            </p>
-            <p className="mt-1 text-3xl font-black">{approved.length}</p>
-          </div>
+  <p className="mt-3 text-6xl font-black text-yellow-300">
+    {money(totalGivenAway)}
+  </p>
 
-          <div className="rounded-3xl bg-[#140404]/80 p-5">
-            <p className="text-xs tracking-[0.3em] text-white/50">
-              PAID
-            </p>
-            <p className="mt-1 text-3xl font-black">{paid.length}</p>
-          </div>
+  <p className="mt-3 text-lg font-bold text-yellow-300">
+    To the community
+  </p>
         </div>
 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
   <button
@@ -144,11 +206,22 @@ window.dispatchEvent(new Event("vault-count-updated"));
   >
     Giveaway Claims
   </button>
+
+  <button
+  onClick={() => setActiveTab("history")}
+  className={`rounded-2xl border px-6 py-3 text-sm font-black uppercase tracking-[0.2em] transition ${
+    activeTab === "history"
+      ? "border-yellow-400 bg-yellow-500/20 text-yellow-300 shadow-[0_0_18px_rgba(250,204,21,0.25)]"
+      : "border-white/10 bg-black/40 text-white/70 hover:bg-black/70"
+  }`}
+>
+  Claim History
+</button>
 </div>
 {activeTab === "rewards" && (
   <>
     <div className="mt-8 space-y-4">
-          {claims.length === 0 ? (
+          {claimHistory.length === 0 ? (
             <div className="rounded-3xl bg-[#140404]/80 p-8">
               <p className="text-white/70">
                 You have no rewards in The Vault yet.
@@ -230,74 +303,85 @@ window.dispatchEvent(new Event("vault-count-updated"));
   <div className="mt-8 grid gap-6 md:grid-cols-2">
     {/* GIVEAWAY CLAIMS */}
     <div className="rounded-3xl border border-yellow-500/20 bg-black/70 p-8 shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-black text-white">
-            Giveaway Claims
-          </h2>
+      <h2 className="text-3xl font-black text-white">
+        Giveaway Claims
+      </h2>
 
-          <p className="mt-2 text-white/60">
-            Claim prizes won through Discord, Twitch streams, and community events.
-          </p>
-        </div>
-      </div>
+      <p className="mt-2 text-white/60">
+        Giveaway prizes added by admins will appear here when they match your connected Twitch or Spartans account.
+      </p>
 
-      <div className="space-y-4">
-        <input
-          placeholder="Prize won"
-          className="w-full rounded-2xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-yellow-300"
-        />
+      <div className="mt-8 rounded-2xl border border-white/10 bg-[#140404]/80 p-8">
+{giveawayPrizes.filter((prize) => prize.status !== "paid").length === 0 ? (
+  <div className="rounded-2xl border border-white/10 bg-[#140404]/80 p-6 text-center">
+    <p className="text-lg font-black text-white">
+      No Pending Claims
+    </p>
 
-        <input
-          placeholder="Discord username"
-          className="w-full rounded-2xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-yellow-300"
-        />
-
-        <input
-          placeholder="Spartans username or wallet"
-          className="w-full rounded-2xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-yellow-300"
-        />
-
-        <button
-          className="w-full rounded-2xl border border-yellow-400/30 bg-yellow-500/10 px-6 py-4 font-black uppercase tracking-[0.2em] text-yellow-300 transition hover:bg-yellow-500/20"
+    <p className="mt-2 text-sm text-white/60">
+      You currently have no giveaway claims awaiting action.
+    </p>
+  </div>
+) : (
+  <div className="space-y-4">
+    {giveawayPrizes
+      .filter((prize) => prize.status !== "paid")
+      .map((prize) => (
+        <div
+          key={prize.id}
+          className="rounded-2xl border border-yellow-400/20 bg-black/40 p-4 text-left"
         >
-          Submit Claim
-        </button>
-      </div>
-
-      <div className="mt-6 space-y-4">
-        <div className="rounded-2xl border border-yellow-400/20 bg-yellow-500/5 p-4">
-          <p className="font-black text-yellow-300">
-            Pending Review
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-yellow-300/70">
+            {prize.winner_type}
           </p>
 
-          <p className="mt-2 text-sm text-white/60">
-            Claims are manually reviewed before approval and payout.
+          <h3 className="mt-1 text-xl font-black text-white">
+            {prize.prize_name}
+          </h3>
+
+          <p className="mt-1 text-2xl font-black text-yellow-300">
+            ${prize.prize_amount}
           </p>
+
+          <p className="mt-2 text-sm uppercase text-white/50">
+            {prize.status}
+          </p>
+
+          <button
+            disabled={prize.status !== "unclaimed"}
+            onClick={() => claimGiveawayPrize(prize.id)}
+            className={`mt-3 rounded-xl border px-5 py-3 font-black transition ${
+              prize.status === "unclaimed"
+                ? "border-yellow-400/30 bg-yellow-400/10 text-yellow-300 hover:bg-yellow-400/20"
+                : prize.status === "claimed"
+                ? "border-yellow-400/30 bg-yellow-400/10 text-yellow-300"
+                : prize.status === "approved"
+                ? "border-yellow-400/30 bg-yellow-400/10 text-yellow-300"
+                : prize.status === "paid"
+                ? "border-emerald-400/30 bg-emerald-500/10 text-emerald-300"
+                : "border-red-400/30 bg-red-500/10 text-red-300"
+            }`}
+          >
+            {prize.status === "unclaimed"
+              ? "Claim Prize"
+              : prize.status === "claimed"
+              ? "Waiting for Approval"
+              : prize.status === "approved"
+              ? "Approved"
+              : prize.status === "paid"
+              ? "Paid"
+              : prize.status === "rejected"
+              ? "Rejected"
+              : prize.status}
+          </button>
         </div>
-
-        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/5 p-4">
-          <p className="font-black text-emerald-300">
-            Approved Claims
-          </p>
-
-          <p className="mt-2 text-sm text-white/60">
-            Approved rewards will appear in your Vault history after processing.
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-red-400/20 bg-red-500/5 p-4">
-          <p className="font-black text-red-300">
-            Rejected Claims
-          </p>
-
-          <p className="mt-2 text-sm text-white/60">
-            Fraudulent, duplicate, or unverifiable claims may be rejected.
-          </p>
-        </div>
+      ))}
+  </div>
+)}
       </div>
     </div>
-
+{giveawayPrizes.filter((prize) => prize.status !== "paid").length > 0 && (
+  <>
     {/* VERIFICATION */}
     <div className="rounded-3xl border border-white/10 bg-[#140404]/80 p-8 text-left shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
       <h2 className="mb-5 text-3xl font-black text-white">
@@ -309,7 +393,7 @@ window.dispatchEvent(new Event("vault-count-updated"));
           <span className="text-white/70">Discord</span>
 
           <span className="font-bold text-white">
-Connected
+            Connected
           </span>
         </div>
 
@@ -317,7 +401,7 @@ Connected
           <span className="text-white/70">Twitch</span>
 
           <span className="font-bold text-white">
-Check Profile Page
+            Check Profile Page
           </span>
         </div>
 
@@ -334,10 +418,60 @@ Check Profile Page
         Add only solo-owned accounts. Attempts to abuse giveaways, multi-account,
         botting, or reward systems may result in claim rejection or permanent bans.
       </p>
+    </div>  </>
+)}
+  </div>
+)}
+{activeTab === "history" && (
+  <div className="mt-8 rounded-3xl border border-yellow-500/20 bg-black/70 p-8 text-left shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
+    <h2 className="mb-6 text-3xl font-black text-white">
+      Claim History
+    </h2>
+
+    <div className="space-y-4">
+      {claims.length === 0 ? (
+        <p className="text-white/60">
+          You have no previous claims yet.
+        </p>
+      ) : (
+        claimHistory.map((claim) => (
+          <div
+            key={claim.id}
+            className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#140404]/80 p-5"
+          >
+            <div>
+              <p className="font-black text-white">
+                {new Date(claim.created_at).toLocaleString()}
+              </p>
+
+              <p className="mt-1 text-white/60">
+                {claim.type} — {claim.name}
+<br />
+Amount: {money(claim.amount)}
+              </p>
+            </div>
+
+            <span className="rounded-full border border-yellow-400/30 bg-yellow-500/10 px-4 py-1 text-xs font-black uppercase text-yellow-300">
+{claim.status === "pending"
+  ? "Waiting for Approval"
+  : claim.status === "unclaimed"
+  ? "Available to Claim"
+  : claim.status === "claimed"
+  ? "Waiting for Approval"
+  : claim.status === "approved"
+  ? "Approved"
+  : claim.status === "paid"
+  ? "Paid"
+  : claim.status === "rejected"
+  ? "Rejected"
+  : claim.status}
+            </span>
+          </div>
+        ))
+      )}
     </div>
   </div>
 )}
-
         <div className="mt-10 rounded-3xl border border-yellow-500/20 bg-black/70 p-8 shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
   <div className="mb-6 flex items-center gap-3">
     <div className="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />

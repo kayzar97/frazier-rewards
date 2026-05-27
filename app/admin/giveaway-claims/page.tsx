@@ -57,6 +57,34 @@ export default function GiveawayClaimsPage() {
 
     loadPrizes();
   }
+  async function updatePrizeStatus(
+  prizeId: number,
+  status: "approved" | "paid" | "rejected"
+) {
+  const confirmed = confirm(`Set this giveaway claim to ${status}?`);
+  if (!confirmed) return;
+
+  const res = await fetch("/api/admin/giveaway-prizes/status", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ prizeId, status }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error || "Failed to update giveaway claim");
+    return;
+  }
+
+  setPrizes((prev) =>
+    prev.map((prize) =>
+      prize.id === prizeId ? { ...prize, status } : prize
+    )
+  );
+}
 
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white">
@@ -141,6 +169,29 @@ export default function GiveawayClaimsPage() {
                   <p className="mt-2 text-sm uppercase text-white/50">
                     {prize.status}
                   </p>
+
+                  <div className="mt-4 flex flex-wrap gap-3">
+  <button
+    onClick={() => updatePrizeStatus(prize.id, "approved")}
+    className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-2 font-bold text-emerald-300 hover:bg-emerald-500/20"
+  >
+    Approve
+  </button>
+
+  <button
+    onClick={() => updatePrizeStatus(prize.id, "paid")}
+    className="rounded-xl border border-yellow-400/30 bg-yellow-500/10 px-4 py-2 font-bold text-yellow-300 hover:bg-yellow-500/20"
+  >
+    Mark Paid
+  </button>
+
+  <button
+    onClick={() => updatePrizeStatus(prize.id, "rejected")}
+    className="rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-2 font-bold text-red-300 hover:bg-red-500/20"
+  >
+    Reject
+  </button>
+</div>
                 </div>
               </div>
             </div>
