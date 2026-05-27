@@ -380,7 +380,7 @@ async function claimGiveawayPrize(prizeId: number) {
 )}
       </div>
     </div>
-{giveawayPrizes.filter((prize) => prize.status !== "paid").length > 0 && (
+{activeTab === "giveaways" && (
   <>
     {/* VERIFICATION */}
     <div className="rounded-3xl border border-white/10 bg-[#140404]/80 p-8 text-left shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
