@@ -23,6 +23,10 @@ function money(value: number) {
 }
 
 export default function VaultPage() {
+  const [activeTab, setActiveTab] = useState<
+"rewards" | "giveaways"
+>("rewards");
+
   const [claims, setClaims] = useState<Claim[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -118,8 +122,32 @@ window.dispatchEvent(new Event("vault-count-updated"));
             <p className="mt-1 text-3xl font-black">{paid.length}</p>
           </div>
         </div>
+<div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+  <button
+    onClick={() => setActiveTab("rewards")}
+    className={`rounded-2xl border px-6 py-3 text-sm font-black uppercase tracking-[0.2em] transition ${
+      activeTab === "rewards"
+        ? "border-yellow-400 bg-yellow-500/20 text-yellow-300 shadow-[0_0_18px_rgba(250,204,21,0.25)]"
+        : "border-white/10 bg-black/40 text-white/70 hover:bg-black/70"
+    }`}
+  >
+    Wager Rewards
+  </button>
 
-        <div className="mt-8 space-y-4">
+  <button
+    onClick={() => setActiveTab("giveaways")}
+    className={`rounded-2xl border px-6 py-3 text-sm font-black uppercase tracking-[0.2em] transition ${
+      activeTab === "giveaways"
+        ? "border-yellow-400 bg-yellow-500/20 text-yellow-300 shadow-[0_0_18px_rgba(250,204,21,0.25)]"
+        : "border-white/10 bg-black/40 text-white/70 hover:bg-black/70"
+    }`}
+  >
+    Giveaway Claims
+  </button>
+</div>
+{activeTab === "rewards" && (
+  <>
+    <div className="mt-8 space-y-4">
           {claims.length === 0 ? (
             <div className="rounded-3xl bg-[#140404]/80 p-8">
               <p className="text-white/70">
@@ -167,14 +195,15 @@ window.dispatchEvent(new Event("vault-count-updated"));
                         : "text-red-300"
                     }`}
                   >
-                    {claim.status.toUpperCase()}
-                    {claim.gamble_used && claim.gamble_result === "win" && (
+{claim.status.toUpperCase()}
+</p>
+
+{claim.gamble_used && claim.gamble_result === "win" && (
   <p className="mt-1 text-sm font-bold text-emerald-300">
     DOUBLE DOWN WON
   </p>
 )}
-                  </p>
-                </div>
+      </div>
                 
 
 <button
@@ -194,6 +223,121 @@ window.dispatchEvent(new Event("vault-count-updated"));
             ))
           )}
         </div>
+        </>
+)}
+
+{activeTab === "giveaways" && (
+  <div className="mt-8 grid gap-6 md:grid-cols-2">
+    {/* GIVEAWAY CLAIMS */}
+    <div className="rounded-3xl border border-yellow-500/20 bg-black/70 p-8 shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-black text-white">
+            Giveaway Claims
+          </h2>
+
+          <p className="mt-2 text-white/60">
+            Claim prizes won through Discord, Twitch streams, and community events.
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <input
+          placeholder="Prize won"
+          className="w-full rounded-2xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-yellow-300"
+        />
+
+        <input
+          placeholder="Discord username"
+          className="w-full rounded-2xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-yellow-300"
+        />
+
+        <input
+          placeholder="Spartans username or wallet"
+          className="w-full rounded-2xl border border-white/10 bg-black/50 px-5 py-4 text-white outline-none transition focus:border-yellow-300"
+        />
+
+        <button
+          className="w-full rounded-2xl border border-yellow-400/30 bg-yellow-500/10 px-6 py-4 font-black uppercase tracking-[0.2em] text-yellow-300 transition hover:bg-yellow-500/20"
+        >
+          Submit Claim
+        </button>
+      </div>
+
+      <div className="mt-6 space-y-4">
+        <div className="rounded-2xl border border-yellow-400/20 bg-yellow-500/5 p-4">
+          <p className="font-black text-yellow-300">
+            Pending Review
+          </p>
+
+          <p className="mt-2 text-sm text-white/60">
+            Claims are manually reviewed before approval and payout.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/5 p-4">
+          <p className="font-black text-emerald-300">
+            Approved Claims
+          </p>
+
+          <p className="mt-2 text-sm text-white/60">
+            Approved rewards will appear in your Vault history after processing.
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-red-400/20 bg-red-500/5 p-4">
+          <p className="font-black text-red-300">
+            Rejected Claims
+          </p>
+
+          <p className="mt-2 text-sm text-white/60">
+            Fraudulent, duplicate, or unverifiable claims may be rejected.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {/* VERIFICATION */}
+    <div className="rounded-3xl border border-white/10 bg-[#140404]/80 p-8 text-left shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
+      <h2 className="mb-5 text-3xl font-black text-white">
+        Verification
+      </h2>
+
+      <div className="space-y-3">
+        <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-4 py-4">
+          <span className="text-white/70">Discord</span>
+
+          <span className="font-bold text-white">
+Connected
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-4 py-4">
+          <span className="text-white/70">Twitch</span>
+
+          <span className="font-bold text-white">
+Check Profile Page
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between rounded-xl border border-white/10 bg-black/40 px-4 py-4">
+          <span className="text-white/70">Status</span>
+
+          <span className="rounded-full border border-emerald-400/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.15em] text-emerald-300">
+            Verified
+          </span>
+        </div>
+      </div>
+
+      <p className="mt-6 text-sm leading-7 text-yellow-100/70">
+        Add only solo-owned accounts. Attempts to abuse giveaways, multi-account,
+        botting, or reward systems may result in claim rejection or permanent bans.
+      </p>
+    </div>
+  </div>
+)}
+
         <div className="mt-10 rounded-3xl border border-yellow-500/20 bg-black/70 p-8 shadow-[0_0_30px_rgba(255,180,0,0.08)] backdrop-blur-sm">
   <div className="mb-6 flex items-center gap-3">
     <div className="h-3 w-3 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />

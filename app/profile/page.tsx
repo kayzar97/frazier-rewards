@@ -199,7 +199,7 @@ setSaved(true);
 
           <div className="mt-4">
             <p className="text-sm font-bold text-yellow-300">
-              You must connect your Twitch account in order to claim any giveaways won on stream.
+              You must connect your Twitch account in order to claim any giveaways won on stream and Discord.
             </p>
           </div>
         </>

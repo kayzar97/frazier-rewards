@@ -90,6 +90,12 @@ export default async function AdminUsersPage({
 >
   Bonus Hunt
 </Link>
+<Link
+  href="/admin/giveaway-claims"
+  className="rounded-xl border border-yellow-500/20 bg-[#140404]/80 px-4 py-2 text-sm font-black text-yellow-300 transition hover:bg-yellow-500/10"
+>
+  Giveaway Claims
+</Link>
         </div>
 
         <AdminSettingsToggles />
